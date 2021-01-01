@@ -11,7 +11,7 @@ def post_message(request):
         req_body = json.loads(request.body)
         new_message = Message(**req_body)
         new_message.save()
-        return JsonResponse({'message': 'mesage sent successfully'})
+        return JsonResponse({'message': 'message sent successfully'})
 
     else:
         return JsonResponse({'error': 'try a post request'})
@@ -44,10 +44,12 @@ def get_message(request, message_id):
         return JsonResponse({"error": "message not found"})
 
 
+@csrf_exempt
 def delete_message(request, message_id):
-    message = Message.objects.filter(pk=message_id)
-    if message:
-        message.delete()
-        return JsonResponse({"message": f"message {message_id} deleted"})
-    else:
-        return JsonResponse({"error": "message not found"})
+    if request.method == 'DELETE':
+        message = Message.objects.filter(pk=message_id)
+        if message:
+            message.delete()
+            return JsonResponse({"message": f"message {message_id} deleted"})
+        else:
+            return JsonResponse({"error": "message not found"})
